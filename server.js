@@ -43,16 +43,30 @@ app.get('/getMacros', (req, res) =>{
     return;
 })
 
-app.get('/writeToJSON', (req, res) =>{
+app.get('/getUUIDs', (req, res) =>{
+    const json = require(__dirname + '/userData.json');
+    const uuid = json.Macros[req.headers.macro].uuid;
+
     
-    const uuid = req.headers.uuid
+
+    if (req.query.pass != pass){
+        res.status(200);
+        res.json({uuid:{"Wrong Passowrd :)":"suck a dick bitch"}})
+        return;
+    }
+    
+    res.status(200);
+    res.json({uuid:uuid});
+    return;
+})
+
+app.get('/writeToJSON', (req, res) =>{
     const macro = req.headers.macro
+    const uuid = req.headers.uuid
 
     if (req.query.pass != pass){
         res.status(401);
-        res.json({
-            reason:"Wrong Password"
-        });
+        res.json({reason:"Wrong Password"});
         return;
     }
     else if (uuid.length == 36 && uuid.split("-").length == 5){
@@ -60,14 +74,11 @@ app.get('/writeToJSON', (req, res) =>{
     }
     else{
         res.status(401)
-        res.json({
-            reason:"Wrong UUID structure"
-        });
+        res.json({reason:"Wrong UUID structure"});
         return;
     }
 
     let data = require(__dirname + '/userData.json');
-    console.warn(JSON.stringify(data.Macros[macro].uuid))
 
     if (JSON.stringify(data.Macros[macro].uuid).includes(uuid)){
         res.json({
@@ -75,23 +86,56 @@ app.get('/writeToJSON', (req, res) =>{
         });
         return;
     }
-    
     data.Macros[macro].uuid.push(uuid);
 
-
-    
     const fs = require('fs');
     fs.writeFile(__dirname + '/userData.json', JSON.stringify(data, null, 4), (err) => {
         if (err) {
-          console.error('Error writing JSON file:', err);
+            console.error('Error writing JSON file:', err);
         } else {
-          console.log('JSON file has been updated.');
+            console.warn(`${uuid} removed from ${macro}`);
         }
     })
     res.json({
         reason:`UUID: ${uuid} added to ${macro}`
     });
 });
+
+app.get('/removeToJSON', (req, res) =>{
+    const macro = req.headers.macro
+    const uuid = req.headers.uuid
+
+
+    if (req.query.pass != pass){
+        res.status(401);
+        res.json({reason:"Wrong Password"});
+        return;
+    }
+    else if (uuid.length == 36 && uuid.split("-").length == 5){
+        res.status(200)
+    }
+    else{
+        res.status(200)
+        res.json({reason:"Wrong UUID structure"});
+        return;
+    }
+
+    let data = require(__dirname + '/userData.json');
+    delete data.Macros[macro].uuid[uuid]
+
+    const fs = require('fs');
+    fs.writeFile(__dirname + '/userData.json', JSON.stringify(data, null, 4), (err) => {
+        if (err) {
+            console.error('Error writing JSON file:', err);
+        } else {
+            console.warn(`${uuid} removed from ${macro}`);
+        }
+    })
+    res.json({
+        reason:`UUID: ${uuid} removed from ${macro}`
+    });
+});
+
 
 // Slumber hotel ticket macro
 app.get('/shtTicketMacro', (req, res) => {
@@ -106,7 +150,7 @@ app.get('/shtTicketMacro', (req, res) => {
         return;
     }
 
-    res.status(403);
+    res.status(200);
     res.json({
         status: false,
         msg: discord

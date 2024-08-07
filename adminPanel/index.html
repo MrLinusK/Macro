@@ -5,21 +5,50 @@
     </head>
     <body onload="load()">
         <div id="center-wrapper">
-            <div id="selector-wrapper">
+            <div id="group-wrapper">
 
-                <div id="options">
-                    <input id="uuid" type="text" placeholder="UUID">
-                    <select id="macro-selector">
-                        <optgroup label="Macros" id="macros">
-                        </optgroup>
-                    </select>
+                <div id="i-ran-out-of-names">
+                    <div id="selector-wrapper">
+                        <div id="options">
+                            <select id="macro-selector-add" class="dropdown">
+                                <optgroup label="Macros" id="macros-add">
+                                </optgroup>
+                            </select>
+                            <input id="ign-add" type="text" placeholder="IGN">
+                        </div>
+                        <div id="button-wrapper">
+                            <button id="button" onclick="loadUUIDs()">Add UUID</button>
+                        </div>
+                    </div>
+                    <div id="under" class="under">
+                        <input id="uuid-add" type="text" placeholder="UUID">
+                    </div>
                 </div>
 
-                <div id="button-wrapper">
-                    <button id="button" onclick="addUser()">Alow Access</button>
+                <div id="i-ran-out-of-names">
+                    <div id="selector-wrapper">
+                        <div id="options">
+                        <select id="macro-selector-remove" class="dropdown" onchange="loadUUIDs()">
+                            <optgroup label="Macros" id="macros-remove">
+                            </optgroup>
+                        </select>
+                        <select id="ign-selector" class="dropdown" onchange="nameSwap()">
+                            <optgroup label="IGN's" id="ign-selector-dropdown">
+                            </optgroup>
+                        </select>
+
+                        </div>
+                        <div id="button-wrapper">
+                            <button id="button" onclick="removeUser()">Remove UUID</button>
+                        </div>
+                    </div>
+                    <select id="uuid-remove" class="under" onchange="uuidSwap()">
+                        <optgroup label="UUID's" id="uuid-selector-dropdown">
+                        </optgroup>
+                    </select>
                 </div>
             </div>
         </div>
     </body>
-    <script src= "/index.js"></script>
+    <script src="/index.js"></script>
 </html>

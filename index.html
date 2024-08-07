@@ -1,1 +1,18 @@
-Nothin To See Here
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="/styles.css">
+    </head> 
+    <body>
+        <div style="font-size: 5rem; text-align:center;">Come Check out my <a href="https://discord.gg/EcTmMB7Scz">Discord</a></div>
+        <div style="display: flex; justify-content: center;">
+            <input id="password" placeholder="Or my adminpannel" onchange="code()" >
+        </div>
+    </body>
+    <script>
+        async function code(){
+            let password = document.getElementById("password").value
+            location.replace(`/adminpanel?pass=${password}`);
+        }
+    </script>
+</html>

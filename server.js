@@ -88,7 +88,6 @@ app.get('/writeToJSON', (req, res) =>{
         return;
     }
     data.Macros[macro].uuid[uuid] = name;
-    console.warn(data)
 
     const fs = require('fs');
     fs.writeFile(__dirname + '/userData.json', JSON.stringify(data, null, 4), (err) => {
@@ -109,7 +108,7 @@ app.get('/removeToJSON', (req, res) =>{
 
 
     if (req.query.pass != pass){
-        res.status(401);
+        res.status(200);
         res.json({reason:"Wrong Password"});
         return;
     }
@@ -138,12 +137,46 @@ app.get('/removeToJSON', (req, res) =>{
     });
 });
 
+function checkUUIDauth(macro, uuid){
+    //Check if valid uuid
+    if (uuid.length != 36 || uuid.split("-").length != 5){
+        return false;
+    }
+    let data = require(__dirname + '/userData.json');
+
+    //Check if macro exsists
+    let pass = false;
+    for (const real_macro in data.Macros){
+        if (real_macro == macro){
+            pass = true;
+            break;
+        }
+    }
+    if (!pass){
+        return false;
+    }
+
+    //Check if uuid in macro
+    if(JSON.stringify(Object.keys(data.Macros[macro].uuid)).includes(uuid)) {
+        return true;
+    }
+    return false;
+}
 
 // Slumber hotel ticket macro
-app.get('/shtTicketMacro', (req, res) => {
+app.get('/chechAuth', (req, res) => {
+    let [uuid, macro, allowed] = '';
+    try{
+        uuid = req.headers.uuid;
+        macro = req.headers.macro;
+        allowed = checkUUIDauth(macro, uuid);
+    }
+    catch{
+        console.warn('Invalid Headers')
+        allowed = false;
+    }
 
-    let data = require(__dirname + '/userData.json');
-    if(JSON.stringify(data.Macros.SlumberHotell.uuid).includes(req.query.uuid)) {
+    if (allowed){
         res.status(200);
         res.json({
             status: true,
@@ -151,7 +184,6 @@ app.get('/shtTicketMacro', (req, res) => {
         });
         return;
     }
-
     res.status(200);
     res.json({
         status: false,

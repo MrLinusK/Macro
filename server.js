@@ -46,8 +46,8 @@ app.get('/getMacros', (req, res) =>{
 app.get('/getUUIDs', (req, res) =>{
     const json = require(__dirname + '/userData.json');
     const uuid = json.Macros[req.headers.macro].uuid;
-
     
+    console.warn(uuid)
 
     if (req.query.pass != pass){
         res.status(200);
@@ -63,17 +63,18 @@ app.get('/getUUIDs', (req, res) =>{
 app.get('/writeToJSON', (req, res) =>{
     const macro = req.headers.macro
     const uuid = req.headers.uuid
+    const name = req.headers.name
 
     if (req.query.pass != pass){
-        res.status(401);
-        res.json({reason:"Wrong Password"});
+        res.status(200);
+        res.json({uuid:{"Wrong Passowrd :)":"suck a dick bitch"}});
         return;
     }
     else if (uuid.length == 36 && uuid.split("-").length == 5){
         res.status(200)
     }
     else{
-        res.status(401)
+        res.status(200)
         res.json({reason:"Wrong UUID structure"});
         return;
     }
@@ -86,7 +87,8 @@ app.get('/writeToJSON', (req, res) =>{
         });
         return;
     }
-    data.Macros[macro].uuid.push(uuid);
+    data.Macros[macro].uuid[uuid] = name;
+    console.warn(data)
 
     const fs = require('fs');
     fs.writeFile(__dirname + '/userData.json', JSON.stringify(data, null, 4), (err) => {

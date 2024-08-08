@@ -21,6 +21,8 @@ async function load(){
         macroTab2.innerHTML = macro;
         dropdown2.appendChild(macroTab2);
     }
+    
+
     loadUUIDs()
 }
 
@@ -40,7 +42,10 @@ async function loadUUIDs(){
     nameDropdown.innerHTML = '';
 
 
+
     for (const [uuid, name] of Object.entries(content.uuid)) {
+
+        console.log(uuid)
 
         let uuidTab = document.createElement('option');
         uuidTab.value = uuid;
@@ -84,21 +89,26 @@ async function uuidSwap(){
 
 async function addUser(){
     const macro = document.getElementById("macro-selector-add");
+    const name = document.getElementById("ign-add")
     const uuid = document.getElementById("uuid-add");
     const {
         host, hostname, href, origin, pathname, port, protocol, search
     } = window.location
     
+
     const request = await fetch(`http://${hostname}:${port}/writeToJSON${search}`, {
         headers:{
             "macro":macro.value,
-            "uuid":uuid.value
+            "uuid":uuid.value,
+            "name":name.value
         }
     });
 
     console.log(`${JSON.parse(await request.text()).reason}`)
 
-    // uuid.value = '';
+    name.value = '';
+    uuid.value = '';
+    loadUUIDs()
 }
 
 async function removeUser(){
@@ -116,4 +126,6 @@ async function removeUser(){
     });
 
     console.log(`${JSON.parse(await request.text()).reason}`)
+    uuid.value = '';
+    loadUUIDs()
 }

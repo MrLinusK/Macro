@@ -1,3 +1,21 @@
+async function getPaswordProtectedUUIDFromMacro(macro) {
+    const {host, hostname, href, origin, pathname, port, protocol, search} = window.location
+
+    const request = await fetch(`http://${hostname}:${port}/getUUIDs${search}`, {headers:{macro:macro}});
+    const content = JSON.parse(await request.text());
+
+    return content
+}
+
+async function addoption(parrent, childType, content) {
+    let child = document.createElement(childType);
+    child.value = content;
+    child.innerHTML = content;
+    parrent.appendChild(child);
+}
+
+
+
 async function load(){
     const {
         host, hostname, href, origin, pathname, port, protocol, search
@@ -10,62 +28,30 @@ async function load(){
     const dropdown2 = document.getElementById('macros-remove');
     
     for (const macro of content.Macros) {
-    
-        let macroTab1 = document.createElement('option');
-        macroTab1.value = macro;
-        macroTab1.innerHTML = macro;
-        dropdown1.appendChild(macroTab1);
-    
-        let macroTab2 = document.createElement('option');
-        macroTab2.value = macro;
-        macroTab2.innerHTML = macro;
-        dropdown2.appendChild(macroTab2);
+        await addoption(dropdown1, 'option', macro);
+        await addoption(dropdown2, 'option', macro);
     }
-    
-
     loadUUIDs()
 }
 
 async function loadUUIDs(){
     const selected = document.getElementById('macro-selector-remove').value;
-    const {
-        host, hostname, href, origin, pathname, port, protocol, search
-    } = window.location
-
-
-    const request = await fetch(`http://${hostname}:${port}/getUUIDs${search}`, {headers:{macro:selected}});
-    const content = JSON.parse(await request.text());
+    const content = await getPaswordProtectedUUIDFromMacro(selected);
     
     const uuidDropdown = document.getElementById('uuid-selector-dropdown');
     const nameDropdown = document.getElementById('ign-selector-dropdown');
     uuidDropdown.innerHTML = '';
     nameDropdown.innerHTML = '';
 
-
-
     for (const [uuid, name] of Object.entries(content.uuid)) {
-
-        console.log(uuid)
-
-        let uuidTab = document.createElement('option');
-        uuidTab.value = uuid;
-        uuidTab.innerHTML = uuid;
-        uuidDropdown.appendChild(uuidTab);
-
-        let nameTab = document.createElement('option');
-        nameTab.value = name;
-        nameTab.innerHTML = name;
-        nameDropdown.appendChild(nameTab);
+        await addoption(uuidDropdown, 'option', uuid);
+        await addoption(nameDropdown, 'option', name);
     }
 }
 
 async function nameSwap(){
     const selected = document.getElementById('macro-selector-remove').value;
-    const {host, hostname, href, origin, pathname, port, protocol, search} = window.location;
-
-    const request = await fetch(`http://${hostname}:${port}/getUUIDs${search}`, {headers:{macro:selected}});
-    const content = JSON.parse(await request.text());
-
+    const content = await getPaswordProtectedUUIDFromMacro(selected);
     const nameDropdown = document.getElementById('ign-selector');
 
     const value = Object.keys(content.uuid).find(key => content.uuid[key] === nameDropdown.value);
@@ -74,13 +60,7 @@ async function nameSwap(){
 
 async function uuidSwap(){
     const selected = document.getElementById('macro-selector-remove').value;
-    const {
-        host, hostname, href, origin, pathname, port, protocol, search
-    } = window.location
-
-    const request = await fetch(`http://${hostname}:${port}/getUUIDs${search}`, {headers:{macro:selected}});
-    const content = JSON.parse(await request.text());
-
+    const content = await getPaswordProtectedUUIDFromMacro(selected);
     const uuidDropdown = document.getElementById('uuid-remove');
 
     document.getElementById('ign-selector').value = content.uuid[uuidDropdown.value];
@@ -105,7 +85,6 @@ async function addUser(){
     });
 
     console.log(`${JSON.parse(await request.text()).reason}`)
-
     name.value = '';
     uuid.value = '';
     loadUUIDs()
@@ -126,6 +105,5 @@ async function removeUser(){
     });
 
     console.log(`${JSON.parse(await request.text()).reason}`)
-    uuid.value = '';
     loadUUIDs()
 }

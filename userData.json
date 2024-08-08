@@ -2,7 +2,8 @@
     "Macros": {
         "SlumberHotell": {
             "uuid": {
-                "89c34eb6-5164-481d-8cba-31d7b11f21ed": "MuffledPester185"
+                "89c34eb6-5164-481d-8cba-31d7b11f21ed": "MuffledPester185",
+                "89c34eb6-5164-481d-8cba-31d7b11f21ec": "Hello"
             }
         },
         "Skyblock": {

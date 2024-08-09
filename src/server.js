@@ -1,12 +1,21 @@
 const express = require('express');
+const router = express.Router()
 const cors = require('cors');
+const path = require('path');
+require('dotenv').config()
 
-const pass = '0605040';
+
+const port = process.env.PORT;
+const pass = process.env.PASSWORD;
+const discord = process.env.DISCORD;
 const app = express();
 
 app.use(cors());
 
-const discord = 'https://discord.gg/EcTmMB7Scz';
+const publicPath = path.join(__dirname, './../public')
+const userDataPath = path.join(__dirname, './../data', 'userData.json')
+const json = require(userDataPath);
+
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html')
@@ -14,29 +23,28 @@ app.get('/', (req, res) => {
 
 app.get('/adminpanel', (req, res) => {
     if (req.query.pass == pass){
-        res.sendFile(__dirname + '/adminPanel/index.html');
+        res.sendFile(path.join(publicPath, 'adminPanel/index.html'));
     }
     else{
-        res.sendFile(__dirname + '/index.html')
+        res.sendFile(path.join(publicPath, 'index.html'))
     }
 });
 
 app.get('/styles.css', (req, res) => {
-    res.sendFile(__dirname + '/adminPanel/styles.css');
+    res.sendFile(path.join(publicPath, 'adminPanel/styles.css'));
 });
 
 app.get('/index.js', (req, res) => {
-    res.sendFile(__dirname + '/adminPanel/index.js');
+    res.sendFile(path.join(publicPath, 'adminPanel/index.js'));
 });
 
 app.get('/userData.json', (req, res) => {
     if (req.query.pass == pass){
-        res.sendFile(__dirname + '/userData.json');
+        res.sendFile(userDataPath);
     }
 });
 
 app.get('/getMacros', (req, res) =>{
-    const json = require(__dirname + '/userData.json');
     const Macros = Object.keys(json.Macros);
 
     res.json({Macros:Macros});
@@ -44,11 +52,7 @@ app.get('/getMacros', (req, res) =>{
 })
 
 app.get('/getUUIDs', (req, res) =>{
-    const json = require(__dirname + '/userData.json');
     const uuid = json.Macros[req.headers.macro].uuid;
-    
-    console.warn(uuid)
-
     if (req.query.pass != pass){
         res.status(200);
         res.json({uuid:{"Wrong Passowrd :)":"suck a dick bitch"}})
@@ -79,18 +83,16 @@ app.get('/writeToJSON', (req, res) =>{
         return;
     }
 
-    let data = require(__dirname + '/userData.json');
-
-    if (JSON.stringify(data.Macros[macro].uuid).includes(uuid)){
+    if (JSON.stringify(json.Macros[macro].uuid).includes(uuid)){
         res.json({
             reason:`${macro} Already has UUID: ${uuid}`
         });
         return;
     }
-    data.Macros[macro].uuid[uuid] = name;
+    json.Macros[macro].uuid[uuid] = name;
 
     const fs = require('fs');
-    fs.writeFile(__dirname + '/userData.json', JSON.stringify(data, null, 4), (err) => {
+    fs.writeFile(userDataPath , JSON.stringify(json, null, 4), (err) => {
         if (err) {
             console.error('Error writing JSON file:', err);
         } else {
@@ -120,12 +122,10 @@ app.get('/removeToJSON', (req, res) =>{
         res.json({reason:"Wrong UUID structure"});
         return;
     }
-
-    let data = require(__dirname + '/userData.json');
-    delete data.Macros[macro].uuid[uuid]
+    delete json.Macros[macro].uuid[uuid]
 
     const fs = require('fs');
-    fs.writeFile(__dirname + '/userData.json', JSON.stringify(data, null, 4), (err) => {
+    fs.writeFile(userDataPath, JSON.stringify(json, null, 4), (err) => {
         if (err) {
             console.error('Error writing JSON file:', err);
         } else {
@@ -192,4 +192,4 @@ app.get('/chechAuth', (req, res) => {
     return;
 });
 
-app.listen(4200);
+app.listen(port);

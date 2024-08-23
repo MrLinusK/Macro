@@ -1,75 +1,48 @@
 const express = require('express');
-const router = express.Router()
 const cors = require('cors');
-const path = require('path');
-require('dotenv').config()
+require('dotenv').config();
 
-
-const port = process.env.PORT;
-const pass = process.env.PASSWORD;
-const discord = process.env.DISCORD;
+const homeRoutes = require('./website.js');
+const userDataPath = './../data/userData.json';
 const app = express();
+const PASS = process.env.PASSWORD;
 
 app.use(cors());
 
-const publicPath = path.join(__dirname, './../public')
-const userDataPath = path.join(__dirname, './../data', 'userData.json')
-const json = require(userDataPath);
-
-
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html')
-})
-
-app.get('/adminpanel', (req, res) => {
-    if (req.query.pass == pass){
-        res.sendFile(path.join(publicPath, 'adminPanel/index.html'));
-    }
-    else{
-        res.sendFile(path.join(publicPath, 'index.html'))
-    }
-});
-
-app.get('/styles.css', (req, res) => {
-    res.sendFile(path.join(publicPath, 'adminPanel/styles.css'));
-});
-
-app.get('/index.js', (req, res) => {
-    res.sendFile(path.join(publicPath, 'adminPanel/index.js'));
-});
-
-app.get('/userData.json', (req, res) => {
-    if (req.query.pass == pass){
-        res.sendFile(userDataPath);
-    }
-});
-
 app.get('/getMacros', (req, res) =>{
+    const json = require(userDataPath);
     const Macros = Object.keys(json.Macros);
 
     res.json({Macros:Macros});
-    return;
-})
+});
 
 app.get('/getUUIDs', (req, res) =>{
+    const json = require(userDataPath);
+
     const uuid = json.Macros[req.headers.macro].uuid;
-    if (req.query.pass != pass){
+    if (req.query.pass != PASS){
         res.status(200);
-        res.json({uuid:{"Wrong Passowrd :)":"suck a dick bitch"}})
+        res.json({uuid:{"Wrong Passowrd :)":"L ratio"}})
         return;
     }
     
     res.status(200);
     res.json({uuid:uuid});
     return;
-})
+});
+
+app.get('/userData.json', (req, res) => {
+    if (req.query.pass == PASS){
+        res.sendFile(userDataPath);
+    }
+});
 
 app.get('/writeToJSON', (req, res) =>{
     const macro = req.headers.macro
     const uuid = req.headers.uuid
     const name = req.headers.name
 
-    if (req.query.pass != pass){
+    if (req.query.pass != PASS){
         res.status(200);
         res.json({uuid:{"Wrong Passowrd :)":"suck a dick bitch"}});
         return;
@@ -89,6 +62,8 @@ app.get('/writeToJSON', (req, res) =>{
         });
         return;
     }
+
+    const json = require(userDataPath);
     json.Macros[macro].uuid[uuid] = name;
 
     const fs = require('fs');
@@ -108,8 +83,7 @@ app.get('/removeToJSON', (req, res) =>{
     const macro = req.headers.macro
     const uuid = req.headers.uuid
 
-
-    if (req.query.pass != pass){
+    if (req.query.pass != PASS){
         res.status(200);
         res.json({reason:"Wrong Password"});
         return;
@@ -122,6 +96,8 @@ app.get('/removeToJSON', (req, res) =>{
         res.json({reason:"Wrong UUID structure"});
         return;
     }
+
+    const json = require(userDataPath);
     delete json.Macros[macro].uuid[uuid]
 
     const fs = require('fs');
@@ -163,9 +139,8 @@ function checkUUIDauth(macro, uuid){
     return false;
 }
 
-// Slumber hotel ticket macro
 app.get('/chechAuth', (req, res) => {
-    let [uuid, macro, allowed] = '';
+    let [allowed] = '';
     try{
         uuid = req.headers.uuid;
         macro = req.headers.macro;
@@ -187,9 +162,11 @@ app.get('/chechAuth', (req, res) => {
     res.status(200);
     res.json({
         status: false,
-        msg: discord
+        msg: process.env.DISCORD
     });
     return;
 });
 
-app.listen(port);
+app.get('/*', homeRoutes);
+
+app.listen(process.env.PORT);

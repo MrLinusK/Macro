@@ -14,8 +14,6 @@ async function addoption(parrent, childType, content) {
     parrent.appendChild(child);
 }
 
-
-
 async function load(){
     const {
         host, hostname, href, origin, pathname, port, protocol, search
@@ -50,8 +48,8 @@ async function loadUUIDs(){
 }
 
 async function nameSwap(){
-    const selected = document.getElementById('macro-selector-remove').value;
-    const content = await getPaswordProtectedUUIDFromMacro(selected);
+    const selectedMacro = document.getElementById('macro-selector-remove').value;
+    const content = await getPaswordProtectedUUIDFromMacro(selectedMacro);
     const nameDropdown = document.getElementById('ign-selector');
 
     const value = Object.keys(content.uuid).find(key => content.uuid[key] === nameDropdown.value);
@@ -59,8 +57,8 @@ async function nameSwap(){
 }
 
 async function uuidSwap(){
-    const selected = document.getElementById('macro-selector-remove').value;
-    const content = await getPaswordProtectedUUIDFromMacro(selected);
+    const selectedMacro = document.getElementById('macro-selector-remove').value;
+    const content = await getPaswordProtectedUUIDFromMacro(selectedMacro);
     const uuidDropdown = document.getElementById('uuid-remove');
 
     document.getElementById('ign-selector').value = content.uuid[uuidDropdown.value];

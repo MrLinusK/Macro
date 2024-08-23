@@ -14,7 +14,7 @@ html,body{
 #group-wrapper{
     display: flex;
     justify-content: space-between;
-    height: 60px;
+    height: auto;
     width: 630px;
 }
 

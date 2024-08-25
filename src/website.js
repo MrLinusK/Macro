@@ -31,7 +31,7 @@ module.exports = function(req, res) {
         return;
     }
     
-    if(_path.toLowerCase().includes("\\adminpanel\\") && _path.endsWith("index.html")) {
+    if(_path.toLowerCase().includes("\\admin\\") && _path.endsWith("index.html")) {
         if (req.query.pass != process.env.PASSWORD){
             res.status(307);
             res.redirect("/");
@@ -44,6 +44,7 @@ module.exports = function(req, res) {
         res.send();
         return;
     }
+    
 
     const contentType = {
         "js": "text/javascript",
@@ -53,8 +54,7 @@ module.exports = function(req, res) {
     
     res.status(200);
 
-    console.log(contentType)
-    res.setHeader('content-type', contentType);
 
+    res.setHeader('content-type', contentType);
     res.send(fs.readFileSync(_path).toString());
 }

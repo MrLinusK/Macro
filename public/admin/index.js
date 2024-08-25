@@ -50,7 +50,7 @@ async function loadUUIDs(){
 async function nameSwap(){
     const selectedMacro = document.getElementById('macro-selector-remove').value;
     const content = await getPaswordProtectedUUIDFromMacro(selectedMacro);
-    const nameDropdown = document.getElementById('ign-selector');
+    const nameDropdown = document.getElementById('ign-remove');
 
     const value = Object.keys(content.uuid).find(key => content.uuid[key] === nameDropdown.value);
     document.getElementById('uuid-remove').value = value;
@@ -61,14 +61,14 @@ async function uuidSwap(){
     const content = await getPaswordProtectedUUIDFromMacro(selectedMacro);
     const uuidDropdown = document.getElementById('uuid-remove');
 
-    document.getElementById('ign-selector').value = content.uuid[uuidDropdown.value];
+    document.getElementById('ign-remove').value = content.uuid[uuidDropdown.value];
 }
 
 
 async function addUser(){
     const macro = document.getElementById("macro-selector-add");
-    const name = document.getElementById("ign-add")
     const uuid = document.getElementById("uuid-add");
+    const name = document.getElementById("ign-add");
     const {
         host, hostname, href, origin, pathname, port, protocol, search
     } = window.location
@@ -91,6 +91,7 @@ async function addUser(){
 async function removeUser(){
     const macro = document.getElementById("macro-selector-remove");
     const uuid = document.getElementById("uuid-remove");
+    const name = document.getElementById("ign-remove")
     const {
         host, hostname, href, origin, pathname, port, protocol, search
     } = window.location
@@ -98,9 +99,13 @@ async function removeUser(){
     const request = await fetch(`http://${hostname}:${port}/removeToJSON${search}`, {
         headers:{
             "macro":macro.value,
-            "uuid":uuid.value
+            "uuid":uuid.value,
+            "name":name.value
         }
     });
+
+    document.getElementById("ign-add").value = name.value
+    document.getElementById("uuid-add").value = uuid.value
 
     console.log(`${JSON.parse(await request.text()).reason}`)
     loadUUIDs()

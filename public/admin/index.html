@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="./styles.css">
+        <link rel="stylesheet" type="text/css" href="/admin/styles.css">
     </head>
     <body onload="load()">
         <div id="center-wrapper">
@@ -17,7 +17,7 @@
                             <input id="ign-add" type="text" placeholder="IGN">
                         </div>
                         <div id="button-wrapper">
-                            <button id="button" onclick="addUser()">Add UUID</button>
+                            <button class="button" onclick="addUser()">Add UUID</button>
                         </div>
                     </div>
                     <div id="under" class="under">
@@ -32,14 +32,14 @@
                             <optgroup label="Macros" id="macros-remove">
                             </optgroup>
                         </select>
-                        <select id="ign-selector" class="dropdown" onchange="nameSwap()">
+                        <select id="ign-remove" class="dropdown" onchange="nameSwap()">
                             <optgroup label="IGN's" id="ign-selector-dropdown">
                             </optgroup>
                         </select>
 
                         </div>
                         <div id="button-wrapper">
-                            <button id="button" onclick="removeUser()">Remove UUID</button>
+                            <button class="button" onclick="removeUser()">Remove UUID</button>
                         </div>
                     </div>
                     <select id="uuid-remove" class="under" onchange="uuidSwap()">
@@ -50,5 +50,5 @@
             </div>
         </div>
     </body>
-    <script src="./index.js"></script>
+    <script src="/admin/index.js"></script>
 </html>

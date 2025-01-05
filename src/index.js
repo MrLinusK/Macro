@@ -160,7 +160,10 @@ app.get('/chechAuth', (req, res) => {
 
     req.headers.pass = PASS;
     validate(PASS, uuid, macro, res)
-
+    if (res.statusCode != 200){
+        return;
+    }
+    
     //Check if UUID in macro
     const json = require(userDataPath);
     

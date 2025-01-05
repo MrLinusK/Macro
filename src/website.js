@@ -15,7 +15,7 @@ function isSafePath(userInput) {
     if (normalizedPath.includes('..')) {
         throw new Error('2Access denied');
     }
-    if (!absolutePath.includes('.')) absolutePath = `${absolutePath}${absolutePath.split('').at(-1)=='\\'?'':'\\'}index.html`
+    if (!absolutePath.includes('.')) absolutePath = `${absolutePath}${absolutePath.split('').at(-1)=='/'?'':'/'}index.html`
     return absolutePath;
 }
 
@@ -31,7 +31,7 @@ module.exports = function(req, res) {
         return;
     }
     
-    if(_path.toLowerCase().includes("\\admin\\") && _path.endsWith("index.html")) {
+    if(_path.toLowerCase().includes("/admin/") && _path.endsWith("index.html")) {
         if (req.query.pass != process.env.PASSWORD){
             res.status(307);
             res.redirect("/");
@@ -40,12 +40,12 @@ module.exports = function(req, res) {
     }
 
     if(!fs.existsSync(_path)) {
+        console.warn(`Path does not exist: ${_path}`)
         res.status(404);
         res.send();
         return;
     }
     
-
     const contentType = {
         "js": "text/javascript",
         "css": "text/css",
